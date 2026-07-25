@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BOULE_RADIUS_M } from '../game/constants'
+import { BOULE_RADIUS_M, THROW_ORIGIN_Y_M } from '../game/constants'
 import { simulateThrow } from './simulate'
 
 function distanceThrown(power: number) {
@@ -27,7 +27,7 @@ describe('simulateThrow', () => {
   it('settles the trajectory at ground level', () => {
     const result = simulateThrow({ direction: { x: 0, y: 1 }, power: 0.5 }, [])
     const last = result.trajectory[result.trajectory.length - 1]
-    expect(result.trajectory[0]).toEqual({ x: 0, y: 0, z: BOULE_RADIUS_M })
+    expect(result.trajectory[0]).toEqual({ x: 0, y: THROW_ORIGIN_Y_M, z: BOULE_RADIUS_M })
     expect(last.z).toBeCloseTo(BOULE_RADIUS_M, 5)
   })
 

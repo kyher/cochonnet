@@ -3,8 +3,8 @@ export const GRAVITY_M_S2 = 9.81
 /** Fixed launch angle for every throw; power scales speed, not angle. */
 export const LAUNCH_ANGLE_DEG = 35
 
-export const MIN_THROW_SPEED_M_S = 3.5
-export const MAX_THROW_SPEED_M_S = 8
+export const MIN_THROW_SPEED_M_S = 4
+export const MAX_THROW_SPEED_M_S = 9.7
 
 /** Fraction of vertical speed kept after a ground bounce. */
 export const RESTITUTION = 0.4
