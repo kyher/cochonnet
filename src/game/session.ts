@@ -33,6 +33,22 @@ export function getTotalScore(session: SessionState): number {
 }
 
 /**
+ * Updates the resting positions of boules already thrown in the current
+ * end. Used when a new throw's physics simulation knocks earlier boules to
+ * a new position — the score isn't affected here, since the end isn't
+ * complete until `recordThrow` finishes it.
+ */
+export function applyObstacleUpdates(session: SessionState, updatedPositions: Vector2[]): SessionState {
+  const currentEnd = session.ends[session.currentEndIndex]
+  if (!currentEnd) return session
+
+  const ends = [...session.ends]
+  ends[session.currentEndIndex] = { ...currentEnd, boulePositions: updatedPositions }
+
+  return { ...session, ends }
+}
+
+/**
  * Records the resting position of the next boule thrown in the current end.
  * Once the end's boules are all thrown, its score is computed and the
  * session advances to the next end.

@@ -3,6 +3,13 @@
 export const TERRAIN_WIDTH_M = 4
 export const TERRAIN_LENGTH_M = 13
 
+/**
+ * Where a boule is released from, behind the line of play (y=0) — the
+ * single source of truth for both the physics launch position and where
+ * the boule waiting to be thrown is rendered, so the two never drift apart.
+ */
+export const THROW_ORIGIN_Y_M = -0.3
+
 export const MIN_COCHONNET_DISTANCE_M = 6
 export const MAX_COCHONNET_DISTANCE_M = 10
 

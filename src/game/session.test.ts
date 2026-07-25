@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { BOULES_PER_END, ENDS_PER_SESSION } from './constants'
 import { generateCochonnetPositions, getDateKey } from './seed'
+import { scoreEnd } from './scoring'
 import {
+  applyObstacleUpdates,
   createSession,
   getCurrentEnd,
   getTotalScore,
@@ -85,5 +87,37 @@ describe('recordThrow', () => {
     expect(getCurrentEnd(session)).toBeNull()
     expect(getTotalScore(session)).toBe(50 * BOULES_PER_END * ENDS_PER_SESSION)
     expect(() => recordThrow(session, { x: 0, y: 0 })).toThrow()
+  })
+})
+
+describe('applyObstacleUpdates', () => {
+  it('replaces the current end boule positions without scoring it', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+    session = recordThrow(session, { x: 1, y: 1 })
+    session = recordThrow(session, { x: 2, y: 2 })
+
+    const knocked = [{ x: 1.5, y: 1.5 }, { x: 2.5, y: 2.5 }]
+    session = applyObstacleUpdates(session, knocked)
+
+    expect(session.ends[0].boulePositions).toEqual(knocked)
+    expect(session.ends[0].score).toBeNull()
+
+    // Finishing the end now scores against the knocked-to positions, not the originals.
+    session = recordThrow(session, cochonnet)
+    expect(session.ends[0].score).toBe(scoreEnd([...knocked, cochonnet], cochonnet))
+  })
+
+  it('is a no-op once the session is complete', () => {
+    let session = createSession(date)
+    for (let e = 0; e < ENDS_PER_SESSION; e++) {
+      const cochonnet = session.ends[e].cochonnetPosition
+      for (let b = 0; b < BOULES_PER_END; b++) {
+        session = recordThrow(session, cochonnet)
+      }
+    }
+
+    const result = applyObstacleUpdates(session, [{ x: 0, y: 0 }])
+    expect(result).toEqual(session)
   })
 })

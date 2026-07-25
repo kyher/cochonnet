@@ -1,4 +1,4 @@
-import { BOULE_RADIUS_M } from '../game/constants'
+import { BOULE_RADIUS_M, THROW_ORIGIN_Y_M } from '../game/constants'
 import type { Vector2 } from '../game/types'
 import { resolveCollisions } from './collision'
 import {
@@ -38,7 +38,7 @@ export function simulateThrow(
   const verticalSpeed = speed * Math.sin(LAUNCH_ANGLE_RAD)
 
   const thrownBody: PhysicsBody = {
-    position: { x: 0, y: 0, z: BOULE_RADIUS_M },
+    position: { x: 0, y: THROW_ORIGIN_Y_M, z: BOULE_RADIUS_M },
     velocity: { x: direction.x * horizontalSpeed, y: direction.y * horizontalSpeed, z: verticalSpeed },
     atRest: false,
   }
