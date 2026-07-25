@@ -1,0 +1,3 @@
+# Custom physics engine (no library)
+
+Boule physics (throw arc, roll, bounce, and boule-to-boule/boule-to-ground collision) are hand-rolled rather than built on a physics library like Matter.js or Planck.js. The rendering is 2D top-down, but the simulation needs a z-height axis for arc and bounce that 2D physics libraries don't model natively — bolting a custom z-axis onto a library's flat-plane assumptions would mean maintaining the seam between two physics systems. Since the actual physics surface is small (circles on a plane, one flying object at a time, simple restitution), owning the full simulation directly is less total complexity than integrating a general-purpose engine for only part of the problem.
