@@ -29,12 +29,10 @@ export function Scoreboard({ endIndex, boulesThrown, totalScore, lastThrow, last
         </span>
         <span>Score: {totalScore}</span>
       </div>
-      {lastThrow && (
-        <div className="scoreboard-feedback">
-          {ZONE_LABELS[lastThrow.zone]} {lastThrow.points > 0 ? `+${lastThrow.points}` : ''}
-        </div>
-      )}
-      {lastEndScore !== null && <div className="scoreboard-feedback">End score: {lastEndScore}</div>}
+      <div className="scoreboard-feedback">
+        {lastThrow ? `${ZONE_LABELS[lastThrow.zone]} ${lastThrow.points > 0 ? `+${lastThrow.points}` : ''}` : ' '}
+      </div>
+      <div className="scoreboard-feedback">{lastEndScore !== null ? `End score: ${lastEndScore}` : ' '}</div>
     </div>
   )
 }
