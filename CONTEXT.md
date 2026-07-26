@@ -8,12 +8,16 @@ A solo, daily score-attack game based on pétanque: throw boules at a jack whose
 A ball thrown by the player, aimed at landing as close as possible to the cochonnet. Each player throws 3 per end.
 
 **Cochonnet**:
-The small target ball (also called the "jack" in English pétanque) that boules are thrown toward. Its position each end is generated from the Daily Seed. Also the name of this game.
+The small target ball (also called the "jack" in English pétanque) that boules are thrown toward. Its position each end starts from the Daily Seed, but a thrown boule can strike and displace it during play — scoring for the rest of the end is measured against wherever it comes to rest. Also the name of this game.
 _Avoid_: Jack (use only when clarifying for an English-speaking audience unfamiliar with the term)
 
 **End**:
-One round of play: the cochonnet is placed, then the player throws all 3 boules at it. A session consists of 3 ends.
+One round of play: the cochonnet is placed, then the player throws boules at it until either all 3 have been thrown or the end is voided. A session consists of 3 ends.
 _Avoid_: Mène, round
+
+**Voided End**:
+An end that terminates immediately, scoring zero, because a thrown boule knocked the cochonnet outside the Terrain's bounds. Any boules not yet thrown for that end are never thrown. Distinct from an end that simply scores zero because every boule missed.
+_Avoid_: Dead end, nullified end
 
 **Session**:
 One full playthrough of the game: 3 ends (9 boule throws total), producing a single total score.
