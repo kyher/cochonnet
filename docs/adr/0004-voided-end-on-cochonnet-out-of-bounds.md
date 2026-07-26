@@ -1,0 +1,5 @@
+# Voided end when the cochonnet is knocked out of bounds
+
+Now that the cochonnet can be struck and displaced, a hard-enough knock can send it past the Terrain's edge. Real pétanque treats this as a dead end, replayed with a fresh jack throw — but this game has no replay concept (a single deterministic Daily Seed per end), so that rule needed a concrete scoring answer. A knocked-out cochonnet now voids the end immediately: the end ends the instant it happens, scores zero, and any of that end's boules not yet thrown are never thrown.
+
+This was chosen over letting the cochonnet be un-knockable-out-of-bounds (clamping it at the terrain edge) or scoring normally against wherever it lands outside the terrain, because both of those either contradict real pétanque (a jack genuinely can be knocked out) or ignore a real rule violation as if it were a normal outcome. Ending the end immediately, rather than letting the player finish out their remaining throws before applying the zero score, was chosen for simplicity and because those remaining throws provably cannot affect the outcome.

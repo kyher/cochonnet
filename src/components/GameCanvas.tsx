@@ -24,7 +24,9 @@ const READY_BOULE_POSITION: Vector2 = { x: 0, y: THROW_ORIGIN_Y_M }
 interface GameCanvasProps {
   cochonnetPosition: Vector2
   restingBoulePositions: Vector2[]
-  animatedBoulePosition: Vector3 | null
+  animatedThrownBoulePosition: Vector3 | null
+  animatedObstaclePositions: Vector3[] | null
+  animatedCochonnetPosition: Vector3 | null
   isAnimating: boolean
   onThrow: (input: ThrowInput) => void
 }
@@ -35,7 +37,9 @@ const MIN_THROW_POWER = 0.05
 export function GameCanvas({
   cochonnetPosition,
   restingBoulePositions,
-  animatedBoulePosition,
+  animatedThrownBoulePosition,
+  animatedObstaclePositions,
+  animatedCochonnetPosition,
   isAnimating,
   onThrow,
 }: GameCanvasProps) {
@@ -76,10 +80,11 @@ export function GameCanvas({
     drawBackground(ctx, canvasSize.widthPx, canvasSize.heightPx)
     drawTerrain(ctx, viewport)
     drawLineOfPlay(ctx, viewport)
-    drawCochonnet(ctx, viewport, cochonnetPosition)
-    restingBoulePositions.forEach((position) => drawBoule(ctx, viewport, position))
-    if (animatedBoulePosition) {
-      drawBoule3d(ctx, viewport, animatedBoulePosition)
+    drawCochonnet(ctx, viewport, animatedCochonnetPosition ?? cochonnetPosition)
+    const obstaclePositions = animatedObstaclePositions ?? restingBoulePositions
+    obstaclePositions.forEach((position) => drawBoule(ctx, viewport, position))
+    if (animatedThrownBoulePosition) {
+      drawBoule3d(ctx, viewport, animatedThrownBoulePosition)
     } else if (!isAnimating) {
       drawBoule(ctx, viewport, READY_BOULE_POSITION)
     }
@@ -93,7 +98,16 @@ export function GameCanvas({
       ctx.lineWidth = 3
       ctx.stroke()
     }
-  }, [canvasSize, cochonnetPosition, restingBoulePositions, animatedBoulePosition, isAnimating, dragCurrent])
+  }, [
+    canvasSize,
+    cochonnetPosition,
+    restingBoulePositions,
+    animatedThrownBoulePosition,
+    animatedObstaclePositions,
+    animatedCochonnetPosition,
+    isAnimating,
+    dragCurrent,
+  ])
 
   const getRelativePoint = useCallback((e: PointerEvent<HTMLCanvasElement>): Vector2 => {
     const rect = canvasRef.current!.getBoundingClientRect()

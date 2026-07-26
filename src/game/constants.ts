@@ -16,6 +16,23 @@ export const MAX_COCHONNET_DISTANCE_M = 10
 export const BOULE_RADIUS_M = 0.0375
 export const COCHONNET_RADIUS_M = 0.015
 
+// Real pétanque equipment masses, so a struck cochonnet reacts like the much
+// lighter object it is rather than an equal-mass boule.
+export const BOULE_MASS_KG = 0.7
+export const COCHONNET_MASS_KG = 0.014
+
+/**
+ * True-to-scale boules/cochonnet render as sub-pixel dots at any realistic
+ * screen size, so `render/draw.ts` draws them this many times larger for
+ * visibility. Collisions use the same exaggerated size (not the true
+ * physical radius) so a hit registers exactly when the drawn circles touch,
+ * matching what's on screen — resting height and scoring/distance math are
+ * unaffected, since those use true positions and radii, not this scale.
+ */
+export const COLLISION_VISUAL_SCALE = 3
+export const BOULE_COLLISION_RADIUS_M = BOULE_RADIUS_M * COLLISION_VISUAL_SCALE
+export const COCHONNET_COLLISION_RADIUS_M = COCHONNET_RADIUS_M * COLLISION_VISUAL_SCALE
+
 export const BOULES_PER_END = 3
 export const ENDS_PER_SESSION = 3
 
