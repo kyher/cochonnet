@@ -3,6 +3,7 @@ import { BOULES_PER_END, ENDS_PER_SESSION } from './constants'
 import { generateCochonnetPositions, getDateKey } from './seed'
 import { scoreEnd } from './scoring'
 import {
+  applyCochonnetUpdate,
   applyObstacleUpdates,
   createSession,
   getCurrentEnd,
@@ -25,6 +26,7 @@ describe('createSession', () => {
       expect(end.cochonnetPosition).toEqual(expectedPositions[i])
       expect(end.boulePositions).toEqual([])
       expect(end.score).toBeNull()
+      expect(end.voided).toBe(false)
     })
   })
 })
@@ -119,5 +121,56 @@ describe('applyObstacleUpdates', () => {
 
     const result = applyObstacleUpdates(session, [{ x: 0, y: 0 }])
     expect(result).toEqual(session)
+  })
+})
+
+describe('applyCochonnetUpdate', () => {
+  it('replaces the current end cochonnet position without scoring it', () => {
+    let session = createSession(date)
+    const knocked = { x: 1, y: 5 }
+
+    session = applyCochonnetUpdate(session, knocked)
+
+    expect(session.ends[0].cochonnetPosition).toEqual(knocked)
+    expect(session.ends[0].score).toBeNull()
+  })
+
+  it('is a no-op once the session is complete', () => {
+    let session = createSession(date)
+    for (let e = 0; e < ENDS_PER_SESSION; e++) {
+      const cochonnet = session.ends[e].cochonnetPosition
+      for (let b = 0; b < BOULES_PER_END; b++) {
+        session = recordThrow(session, cochonnet)
+      }
+    }
+
+    const result = applyCochonnetUpdate(session, { x: 0, y: 0 })
+    expect(result).toEqual(session)
+  })
+})
+
+describe('recordThrow with voided: true', () => {
+  it('ends the end immediately with a score of 0, even with boules left to throw', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+
+    session = recordThrow(session, cochonnet) // 1 of 3 boules thrown
+    session = recordThrow(session, { x: 0, y: 13.5 }, { voided: true }) // knocks the jack out
+
+    expect(session.ends[0].score).toBe(0)
+    expect(session.ends[0].voided).toBe(true)
+    expect(session.ends[0].boulePositions).toHaveLength(2)
+    expect(session.currentEndIndex).toBe(1) // advanced despite only 2 of 3 boules thrown
+  })
+
+  it('does not mark a normal completed end as voided', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+
+    for (let i = 0; i < BOULES_PER_END; i++) {
+      session = recordThrow(session, cochonnet)
+    }
+
+    expect(session.ends[0].voided).toBe(false)
   })
 })

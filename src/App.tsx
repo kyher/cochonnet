@@ -14,9 +14,11 @@ function App() {
     totalScore,
     isComplete,
     isAnimating,
-    animatedBoulePosition,
+    animatedThrownBoulePosition,
+    animatedObstaclePositions,
+    animatedCochonnetPosition,
     lastThrow,
-    lastEndScore,
+    lastEndResult,
     throwBoule,
     restart,
   } = useGameSession(today)
@@ -36,12 +38,14 @@ function App() {
             boulesThrown={currentEnd.boulePositions.length}
             totalScore={totalScore}
             lastThrow={lastThrow}
-            lastEndScore={lastEndScore}
+            lastEndResult={lastEndResult}
           />
           <GameCanvas
             cochonnetPosition={currentEnd.cochonnetPosition}
             restingBoulePositions={currentEnd.boulePositions}
-            animatedBoulePosition={animatedBoulePosition}
+            animatedThrownBoulePosition={animatedThrownBoulePosition}
+            animatedObstaclePositions={animatedObstaclePositions}
+            animatedCochonnetPosition={animatedCochonnetPosition}
             isAnimating={isAnimating}
             onThrow={throwBoule}
           />

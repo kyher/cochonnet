@@ -1,4 +1,10 @@
-import { BOULE_RADIUS_M, COCHONNET_RADIUS_M, TERRAIN_LENGTH_M, TERRAIN_WIDTH_M } from '../game/constants'
+import {
+  BOULE_RADIUS_M,
+  COCHONNET_RADIUS_M,
+  COLLISION_VISUAL_SCALE,
+  TERRAIN_LENGTH_M,
+  TERRAIN_WIDTH_M,
+} from '../game/constants'
 import type { Vector2 } from '../game/types'
 import type { Vector3 } from '../physics/types'
 import { metersToPixels, worldToScreen, type Viewport } from './coordinates'
@@ -15,11 +21,13 @@ const SHADOW_COLOR = 'rgba(0, 0, 0, 0.28)'
 
 // The terrain is tens of meters long, so true-to-scale boules/cochonnet
 // render as sub-pixel dots on any realistic screen size. Draw them
-// exaggerated and with a pixel floor for legibility; this only affects
-// rendering — collision and scoring still use the true physical radii.
-const BOULE_VISUAL_SCALE = 3
+// exaggerated (COLLISION_VISUAL_SCALE, shared with physics so a collision
+// triggers exactly when the drawn circles touch) and with a pixel floor for
+// legibility on tiny screens — the floor itself is rendering-only and has no
+// physics equivalent.
+const BOULE_VISUAL_SCALE = COLLISION_VISUAL_SCALE
 const BOULE_MIN_RADIUS_PX = 7
-const COCHONNET_VISUAL_SCALE = 3
+const COCHONNET_VISUAL_SCALE = COLLISION_VISUAL_SCALE
 const COCHONNET_MIN_RADIUS_PX = 5
 
 function visualRadiusPx(viewport: Viewport, trueRadiusM: number, scale: number, minPx: number): number {

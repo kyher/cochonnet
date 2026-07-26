@@ -21,6 +21,11 @@ export const STOP_SPEED_M_S = 0.05
 /** Fraction of closing speed exchanged along the collision normal (equal-mass impulse). */
 export const COLLISION_RESTITUTION = 0.7
 
-export const FIXED_TIMESTEP_S = 1 / 120
+// Fine enough that a boule at MAX_THROW_SPEED_M_S can't tunnel through the
+// cochonnet between two samples: collision detection is purely positional
+// (no continuous/swept check), so a step's displacement must stay well under
+// the smallest contact distance in play (a boule-cochonnet pair, since the
+// cochonnet's radius is much smaller than a boule's).
+export const FIXED_TIMESTEP_S = 1 / 480
 /** Safety cap so a simulation can never run forever. */
 export const MAX_SIMULATION_TIME_S = 10

@@ -8,8 +8,10 @@ export interface Vector2 {
 export interface EndState {
   cochonnetPosition: Vector2
   boulePositions: Vector2[]
-  /** null until all boules for this end have been thrown. */
+  /** null until all boules for this end have been thrown, or the end is voided. */
   score: number | null
+  /** True if this end was ended early (scored 0) because a boule knocked the cochonnet out of the terrain. */
+  voided: boolean
 }
 
 /** A full session: a fixed sequence of ends, seeded by the day's date. */

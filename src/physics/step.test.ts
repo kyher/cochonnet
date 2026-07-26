@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BOULE_RADIUS_M } from '../game/constants'
+import { BOULE_COLLISION_RADIUS_M, BOULE_MASS_KG, BOULE_RADIUS_M } from '../game/constants'
 import { ROLLING_DECELERATION_M_S2 } from './constants'
 import { stepBody } from './step'
 import type { PhysicsBody } from './types'
@@ -19,6 +19,9 @@ describe('stepBody', () => {
     const body: PhysicsBody = {
       position: { x: 1, y: 2, z: BOULE_RADIUS_M },
       velocity: { x: 0, y: 0, z: 0 },
+      mass: BOULE_MASS_KG,
+      radius: BOULE_RADIUS_M,
+      collisionRadius: BOULE_COLLISION_RADIUS_M,
       atRest: true,
     }
     expect(stepBody(body, DT)).toEqual(body)
@@ -28,6 +31,9 @@ describe('stepBody', () => {
     const body: PhysicsBody = {
       position: { x: 3, y: 4, z: BOULE_RADIUS_M },
       velocity: { x: 0, y: 0, z: 5 },
+      mass: BOULE_MASS_KG,
+      radius: BOULE_RADIUS_M,
+      collisionRadius: BOULE_COLLISION_RADIUS_M,
       atRest: false,
     }
     const result = runToRest(body)
@@ -42,6 +48,9 @@ describe('stepBody', () => {
     const body: PhysicsBody = {
       position: { x: 0, y: 0, z: 2 },
       velocity: { x: 0, y: 1, z: 0 },
+      mass: BOULE_MASS_KG,
+      radius: BOULE_RADIUS_M,
+      collisionRadius: BOULE_COLLISION_RADIUS_M,
       atRest: false,
     }
 
@@ -64,6 +73,9 @@ describe('stepBody', () => {
     const body: PhysicsBody = {
       position: { x: 0, y: 0, z: BOULE_RADIUS_M },
       velocity: { x: 0, y: speed, z: 0 },
+      mass: BOULE_MASS_KG,
+      radius: BOULE_RADIUS_M,
+      collisionRadius: BOULE_COLLISION_RADIUS_M,
       atRest: false,
     }
     const result = runToRest(body)

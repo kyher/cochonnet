@@ -1,12 +1,12 @@
 import { BOULES_PER_END, ENDS_PER_SESSION } from '../game/constants'
-import type { LastThrowFeedback } from '../hooks/useGameSession'
+import type { LastEndResult, LastThrowFeedback } from '../hooks/useGameSession'
 
 interface ScoreboardProps {
   endIndex: number
   boulesThrown: number
   totalScore: number
   lastThrow: LastThrowFeedback | null
-  lastEndScore: number | null
+  lastEndResult: LastEndResult | null
 }
 
 const ZONE_LABELS: Record<LastThrowFeedback['zone'], string> = {
@@ -17,7 +17,7 @@ const ZONE_LABELS: Record<LastThrowFeedback['zone'], string> = {
   miss: 'Miss',
 }
 
-export function Scoreboard({ endIndex, boulesThrown, totalScore, lastThrow, lastEndScore }: ScoreboardProps) {
+export function Scoreboard({ endIndex, boulesThrown, totalScore, lastThrow, lastEndResult }: ScoreboardProps) {
   return (
     <div className="scoreboard">
       <div className="scoreboard-row">
@@ -32,7 +32,13 @@ export function Scoreboard({ endIndex, boulesThrown, totalScore, lastThrow, last
       <div className="scoreboard-feedback">
         {lastThrow ? `${ZONE_LABELS[lastThrow.zone]} ${lastThrow.points > 0 ? `+${lastThrow.points}` : ''}` : ' '}
       </div>
-      <div className="scoreboard-feedback">{lastEndScore !== null ? `End score: ${lastEndScore}` : ' '}</div>
+      <div className="scoreboard-feedback">
+        {lastEndResult === null
+          ? ' '
+          : lastEndResult.voided
+            ? 'Jack knocked out — end void, 0 pts'
+            : `End score: ${lastEndResult.score}`}
+      </div>
     </div>
   )
 }

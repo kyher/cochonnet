@@ -15,6 +15,7 @@ export function createSession(date: Date): SessionState {
         cochonnetPosition,
         boulePositions: [],
         score: null,
+        voided: false,
       }),
     ),
   }
@@ -49,27 +50,52 @@ export function applyObstacleUpdates(session: SessionState, updatedPositions: Ve
 }
 
 /**
+ * Updates the current end's cochonnet position. Used when a throw's physics
+ * simulation knocks the cochonnet to a new resting spot.
+ */
+export function applyCochonnetUpdate(session: SessionState, cochonnetPosition: Vector2): SessionState {
+  const currentEnd = session.ends[session.currentEndIndex]
+  if (!currentEnd) return session
+
+  const ends = [...session.ends]
+  ends[session.currentEndIndex] = { ...currentEnd, cochonnetPosition }
+
+  return { ...session, ends }
+}
+
+/**
  * Records the resting position of the next boule thrown in the current end.
  * Once the end's boules are all thrown, its score is computed and the
- * session advances to the next end.
+ * session advances to the next end. Passing `voided: true` (the cochonnet was
+ * knocked out of the terrain by this throw) ends the end immediately with a
+ * score of 0, regardless of how many boules have been thrown so far.
  */
-export function recordThrow(session: SessionState, boulePosition: Vector2): SessionState {
+export function recordThrow(
+  session: SessionState,
+  boulePosition: Vector2,
+  options: { voided?: boolean } = {},
+): SessionState {
   if (isSessionComplete(session)) {
     throw new Error('Cannot record a throw: session is already complete')
   }
 
   const currentEnd = session.ends[session.currentEndIndex]
-  if (currentEnd.boulePositions.length >= BOULES_PER_END) {
+  if (!options.voided && currentEnd.boulePositions.length >= BOULES_PER_END) {
     throw new Error('Cannot record a throw: current end already has all its boules')
   }
 
-  const boulePositions = [...currentEnd.boulePositions, boulePosition]
-  const endComplete = boulePositions.length >= BOULES_PER_END
+  const boulePositions =
+    currentEnd.boulePositions.length < BOULES_PER_END
+      ? [...currentEnd.boulePositions, boulePosition]
+      : currentEnd.boulePositions
+  const voided = options.voided === true
+  const endComplete = voided || boulePositions.length >= BOULES_PER_END
 
   const updatedEnd: EndState = {
     ...currentEnd,
     boulePositions,
-    score: endComplete ? scoreEnd(boulePositions, currentEnd.cochonnetPosition) : null,
+    score: voided ? 0 : endComplete ? scoreEnd(boulePositions, currentEnd.cochonnetPosition) : null,
+    voided,
   }
 
   const ends = [...session.ends]
