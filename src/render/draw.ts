@@ -19,6 +19,14 @@ const COCHONNET_FILL_COLOR = '#d1495b'
 const COCHONNET_STROKE_COLOR = '#8f2e3b'
 const SHADOW_COLOR = 'rgba(0, 0, 0, 0.28)'
 
+// Anchors for the throw-power drag indicator's RAG gradient (see
+// render/throwIndicator.ts). THROW_POWER_LOW_COLOR is a vivid, saturated
+// green rather than a "natural" one so it still reads clearly against the
+// olive/sandy terrain and background above.
+export const THROW_POWER_LOW_COLOR = '#4ade80'
+export const THROW_POWER_MID_COLOR = '#fbbf24'
+export const THROW_POWER_HIGH_COLOR = '#ef4444'
+
 // The terrain is tens of meters long, so true-to-scale boules/cochonnet
 // render as sub-pixel dots on any realistic screen size. Draw them
 // exaggerated (COLLISION_VISUAL_SCALE, shared with physics so a collision
