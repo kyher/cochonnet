@@ -12,7 +12,8 @@ import {
   drawLineOfPlay,
   drawTerrain,
 } from '../render/draw'
-import { dragToThrowInput } from '../render/gesture'
+import { dragToThrowInput, MAX_DRAG_PX } from '../render/gesture'
+import { getThrowIndicatorStyle } from '../render/throwIndicator'
 
 /**
  * Where the boule waiting to be thrown is shown, behind the line of play —
@@ -89,13 +90,26 @@ export function GameCanvas({
       drawBoule(ctx, viewport, READY_BOULE_POSITION)
     }
 
-    if (dragCurrent) {
+    if (dragCurrent && dragStartRef.current) {
       const from = worldToScreen(READY_BOULE_POSITION, viewport)
+      const start = dragStartRef.current
+      const { power } = dragToThrowInput({ x: dragCurrent.x - start.x, y: dragCurrent.y - start.y })
+      const { color, lineWidthPx } = getThrowIndicatorStyle(power)
+
+      // Line direction follows the pointer from the boule (the visible
+      // pull-back), but its length is capped at the power-equivalent of
+      // MAX_DRAG_PX rather than growing forever past full power.
+      const visual = { x: dragCurrent.x - from.x, y: dragCurrent.y - from.y }
+      const visualMagnitude = Math.hypot(visual.x, visual.y)
+      const cappedLengthPx = power * MAX_DRAG_PX
+      const scale = visualMagnitude > 0 ? Math.min(1, cappedLengthPx / visualMagnitude) : 0
+      const to = { x: from.x + visual.x * scale, y: from.y + visual.y * scale }
+
       ctx.beginPath()
       ctx.moveTo(from.x, from.y)
-      ctx.lineTo(dragCurrent.x, dragCurrent.y)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
-      ctx.lineWidth = 3
+      ctx.lineTo(to.x, to.y)
+      ctx.strokeStyle = color
+      ctx.lineWidth = lineWidthPx
       ctx.stroke()
     }
   }, [
