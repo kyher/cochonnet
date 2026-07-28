@@ -4,11 +4,12 @@ import {
   applyObstacleUpdates,
   createSession,
   getCurrentEnd,
+  getCurrentScore,
   getTotalScore,
   isSessionComplete,
   recordThrow,
 } from '../game/session'
-import { distance, getScoringZone, getZonePoints, isWithinTerrain, scoreEnd } from '../game/scoring'
+import { distance, getScoringZone, getZonePoints, isWithinTerrain } from '../game/scoring'
 import type { EndState, SessionState } from '../game/types'
 import { FIXED_TIMESTEP_S } from '../physics/constants'
 import { simulateThrow } from '../physics/simulate'
@@ -21,7 +22,6 @@ export interface LastThrowFeedback {
 }
 
 export interface LastEndResult {
-  score: number
   voided: boolean
 }
 
@@ -30,6 +30,7 @@ export interface UseGameSessionResult {
   endIndex: number
   currentEnd: EndState | null
   totalScore: number
+  currentScore: number
   isComplete: boolean
   isAnimating: boolean
   animatedThrownBoulePosition: Vector3 | null
@@ -144,11 +145,11 @@ export function useGameSession(date: Date): UseGameSessionResult {
         // once to check their purity).
         const boulePositionsAfterThrow = [...result.updatedObstaclePositions, result.thrownBoulePosition]
         const endCompletesThisThrow = result.cochonnetKnockedOut || boulePositionsAfterThrow.length >= BOULES_PER_END
+        // Only the voided case needs a distinct message here — a normal
+        // completion's final score is already visible via `currentScore`,
+        // which keeps reflecting the same end once it's done.
         if (endCompletesThisThrow) {
-          const score = result.cochonnetKnockedOut
-            ? 0
-            : scoreEnd(boulePositionsAfterThrow, result.updatedCochonnetPosition)
-          setLastEndResult({ score, voided: result.cochonnetKnockedOut })
+          setLastEndResult({ voided: result.cochonnetKnockedOut })
         }
 
         updateSession((s) => {
@@ -183,6 +184,7 @@ export function useGameSession(date: Date): UseGameSessionResult {
     endIndex: session.currentEndIndex,
     currentEnd: getCurrentEnd(session),
     totalScore: getTotalScore(session),
+    currentScore: getCurrentScore(session),
     isComplete: isSessionComplete(session),
     isAnimating,
     animatedThrownBoulePosition,

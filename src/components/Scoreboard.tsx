@@ -5,6 +5,7 @@ interface ScoreboardProps {
   endIndex: number
   boulesThrown: number
   totalScore: number
+  currentScore: number
   lastThrow: LastThrowFeedback | null
   lastEndResult: LastEndResult | null
 }
@@ -17,7 +18,14 @@ const ZONE_LABELS: Record<LastThrowFeedback['zone'], string> = {
   miss: 'Miss',
 }
 
-export function Scoreboard({ endIndex, boulesThrown, totalScore, lastThrow, lastEndResult }: ScoreboardProps) {
+export function Scoreboard({
+  endIndex,
+  boulesThrown,
+  totalScore,
+  currentScore,
+  lastThrow,
+  lastEndResult,
+}: ScoreboardProps) {
   return (
     <div className="scoreboard">
       <div className="scoreboard-row">
@@ -28,17 +36,12 @@ export function Scoreboard({ endIndex, boulesThrown, totalScore, lastThrow, last
           Boule {Math.min(boulesThrown + 1, BOULES_PER_END)}/{BOULES_PER_END}
         </span>
         <span>Score: {totalScore}</span>
+        <span>Current: {currentScore}</span>
       </div>
       <div className="scoreboard-feedback">
-        {lastThrow ? `${ZONE_LABELS[lastThrow.zone]} ${lastThrow.points > 0 ? `+${lastThrow.points}` : ''}` : ' '}
+        {lastThrow ? `${ZONE_LABELS[lastThrow.zone]} ${lastThrow.points > 0 ? `+${lastThrow.points}` : ''}` : ' '}
       </div>
-      <div className="scoreboard-feedback">
-        {lastEndResult === null
-          ? ' '
-          : lastEndResult.voided
-            ? 'Jack knocked out — end void, 0 pts'
-            : `End score: ${lastEndResult.score}`}
-      </div>
+      <div className="scoreboard-feedback">{lastEndResult?.voided ? 'Jack knocked out — end void, 0 pts' : ' '}</div>
     </div>
   )
 }
