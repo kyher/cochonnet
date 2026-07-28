@@ -34,6 +34,19 @@ export function getTotalScore(session: SessionState): number {
 }
 
 /**
+ * The running total for the in-progress end: the same `scoreEnd` computation
+ * used for a finished end's score, applied to whatever boules and cochonnet
+ * position currently stand. Not cached anywhere — always derived fresh from
+ * live position state, so it can't drift out of sync when a collision moves
+ * a boule already thrown into a different scoring zone.
+ */
+export function getCurrentScore(session: SessionState): number {
+  const currentEnd = getCurrentEnd(session)
+  if (!currentEnd) return 0
+  return scoreEnd(currentEnd.boulePositions, currentEnd.cochonnetPosition)
+}
+
+/**
  * Updates the resting positions of boules already thrown in the current
  * end. Used when a new throw's physics simulation knocks earlier boules to
  * a new position — the score isn't affected here, since the end isn't

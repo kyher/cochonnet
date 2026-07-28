@@ -12,6 +12,7 @@ function App() {
     endIndex,
     currentEnd,
     totalScore,
+    currentScore,
     isComplete,
     isAnimating,
     animatedThrownBoulePosition,
@@ -37,6 +38,7 @@ function App() {
             endIndex={endIndex}
             boulesThrown={currentEnd.boulePositions.length}
             totalScore={totalScore}
+            currentScore={currentScore}
             lastThrow={lastThrow}
             lastEndResult={lastEndResult}
           />

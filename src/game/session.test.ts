@@ -7,6 +7,7 @@ import {
   applyObstacleUpdates,
   createSession,
   getCurrentEnd,
+  getCurrentScore,
   getTotalScore,
   isSessionComplete,
   recordThrow,
@@ -172,5 +173,67 @@ describe('recordThrow with voided: true', () => {
     }
 
     expect(session.ends[0].voided).toBe(false)
+  })
+})
+
+describe('getCurrentScore', () => {
+  it('is 0 before any boule is thrown', () => {
+    const session = createSession(date)
+    expect(getCurrentScore(session)).toBe(0)
+  })
+
+  it('reflects only the boules thrown so far in the in-progress end', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+
+    session = recordThrow(session, cochonnet) // bullseye
+    expect(getCurrentScore(session)).toBe(50)
+
+    session = recordThrow(session, { x: 10, y: 10 }) // miss
+    expect(getCurrentScore(session)).toBe(50)
+  })
+
+  it('recalculates once a collision moves an already-scored boule into a new zone', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+
+    session = recordThrow(session, cochonnet) // bullseye: +50
+    expect(getCurrentScore(session)).toBe(50)
+
+    // A later throw's collision knocks the first boule out to the edge of the "near" zone.
+    session = applyObstacleUpdates(session, [{ x: cochonnet.x + 0.9, y: cochonnet.y }])
+    expect(getCurrentScore(session)).toBe(15)
+  })
+
+  it('drops a boule to 0 once a collision knocks it off the terrain entirely', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+
+    session = recordThrow(session, cochonnet) // bullseye: +50
+    session = applyObstacleUpdates(session, [{ x: 0, y: -1 }]) // knocked behind the throwing line
+    expect(getCurrentScore(session)).toBe(0)
+  })
+
+  it('is 0 for the next end, once the previous end completes', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+
+    for (let i = 0; i < BOULES_PER_END; i++) {
+      session = recordThrow(session, cochonnet)
+    }
+
+    expect(getCurrentScore(session)).toBe(0)
+  })
+
+  it('is 0 once the session is complete', () => {
+    let session = createSession(date)
+    for (let e = 0; e < ENDS_PER_SESSION; e++) {
+      const cochonnet = session.ends[e].cochonnetPosition
+      for (let b = 0; b < BOULES_PER_END; b++) {
+        session = recordThrow(session, cochonnet)
+      }
+    }
+
+    expect(getCurrentScore(session)).toBe(0)
   })
 })
