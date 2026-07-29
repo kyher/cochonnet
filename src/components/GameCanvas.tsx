@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { THROW_ORIGIN_Y_M } from '../game/constants'
 import type { Vector2 } from '../game/types'
+import type { LastEndResult, LastThrowFeedback } from '../hooks/useGameSession'
 import type { ThrowInput, Vector3 } from '../physics/types'
 import { computeViewport, worldToScreen } from '../render/coordinates'
 import {
@@ -14,6 +15,8 @@ import {
 } from '../render/draw'
 import { dragToThrowInput, MAX_DRAG_PX } from '../render/gesture'
 import { getThrowIndicatorStyle } from '../render/throwIndicator'
+import { getThrowFeedbackDisplay, getVoidFeedbackDisplay } from '../render/throwFeedback'
+import { ThrowFeedbackOverlay, type ThrowFeedbackItem } from './ThrowFeedbackOverlay'
 
 /**
  * Where the boule waiting to be thrown is shown, behind the line of play —
@@ -29,6 +32,8 @@ interface GameCanvasProps {
   animatedObstaclePositions: Vector3[] | null
   animatedCochonnetPosition: Vector3 | null
   isAnimating: boolean
+  lastThrow: LastThrowFeedback | null
+  lastEndResult: LastEndResult | null
   onThrow: (input: ThrowInput) => void
 }
 
@@ -42,6 +47,8 @@ export function GameCanvas({
   animatedObstaclePositions,
   animatedCochonnetPosition,
   isAnimating,
+  lastThrow,
+  lastEndResult,
   onThrow,
 }: GameCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -49,6 +56,31 @@ export function GameCanvas({
   const [canvasSize, setCanvasSize] = useState({ widthPx: 0, heightPx: 0 })
   const dragStartRef = useRef<Vector2 | null>(null)
   const [dragCurrent, setDragCurrent] = useState<Vector2 | null>(null)
+  const feedbackIdRef = useRef(0)
+  const [feedback, setFeedback] = useState<ThrowFeedbackItem | null>(null)
+
+  // Keyed on both: a normal throw only changes `lastThrow`, but a
+  // session-ending throw changes both in the same commit (see
+  // useGameSession.ts) — either is enough to mean "a new throw just landed."
+  useEffect(() => {
+    if (!lastThrow) {
+      setFeedback(null)
+      return
+    }
+    const viewport = computeViewport(canvasSize.widthPx, canvasSize.heightPx)
+    const screen = worldToScreen(lastThrow.position, viewport)
+    const display = lastEndResult?.voided ? getVoidFeedbackDisplay() : getThrowFeedbackDisplay(lastThrow.zone, lastThrow.points)
+    feedbackIdRef.current += 1
+    setFeedback({
+      key: feedbackIdRef.current,
+      xPx: screen.x,
+      yPx: screen.y,
+      label: display.label,
+      color: display.color,
+      variant: lastEndResult?.voided ? 'void' : 'zone',
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastThrow, lastEndResult])
 
   // Keep the canvas's internal pixel buffer in sync with its displayed CSS size.
   useEffect(() => {
@@ -165,6 +197,7 @@ export function GameCanvas({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       />
+      <ThrowFeedbackOverlay feedback={feedback} />
     </div>
   )
 }

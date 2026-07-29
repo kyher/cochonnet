@@ -89,6 +89,8 @@ describe('GameCanvas + useGameSession, mounted with a real DOM and StrictMode', 
         animatedObstaclePositions={api.animatedObstaclePositions}
         animatedCochonnetPosition={api.animatedCochonnetPosition}
         isAnimating={api.isAnimating}
+        lastThrow={api.lastThrow}
+        lastEndResult={api.lastEndResult}
         onThrow={api.throwBoule}
       />
     )

@@ -9,14 +9,17 @@ import type { Vector2 } from '../game/types'
 import type { Vector3 } from '../physics/types'
 import { metersToPixels, worldToScreen, type Viewport } from './coordinates'
 
-const BACKGROUND_COLOR = '#5b7a4f'
-const TERRAIN_COLOR = '#c9b28a'
-const TERRAIN_BORDER_COLOR = '#a68f68'
-const LINE_OF_PLAY_COLOR = '#f6f2ea'
+// Exported (not just used locally) so render/shareCard.ts can draw the Share
+// Card in the same fixed palette as the game board itself, rather than the
+// app's separate light/dark CSS theme (see docs/adr/0005 and docs/adr/0007).
+export const BACKGROUND_COLOR = '#5b7a4f'
+export const TERRAIN_COLOR = '#c9b28a'
+export const TERRAIN_BORDER_COLOR = '#a68f68'
+export const LINE_OF_PLAY_COLOR = '#f6f2ea'
 const BOULE_FILL_COLOR = '#9aa0a6'
 const BOULE_STROKE_COLOR = '#5f6368'
-const COCHONNET_FILL_COLOR = '#d1495b'
-const COCHONNET_STROKE_COLOR = '#8f2e3b'
+export const COCHONNET_FILL_COLOR = '#d1495b'
+export const COCHONNET_STROKE_COLOR = '#8f2e3b'
 const SHADOW_COLOR = 'rgba(0, 0, 0, 0.28)'
 
 // Anchors for the throw-power drag indicator's RAG gradient (see
@@ -26,6 +29,19 @@ const SHADOW_COLOR = 'rgba(0, 0, 0, 0.28)'
 export const THROW_POWER_LOW_COLOR = '#4ade80'
 export const THROW_POWER_MID_COLOR = '#fbbf24'
 export const THROW_POWER_HIGH_COLOR = '#ef4444'
+
+// Per-zone colors for the on-canvas throw-result feedback (see
+// render/throwFeedback.ts and docs/adr/0006). Ordered best to worst so the
+// gradient reads the same "good = green, bad = red" way the power indicator
+// above does, without reusing its exact anchor colors (different signal).
+export const ZONE_BULLSEYE_COLOR = '#ffd700'
+export const ZONE_CLOSE_COLOR = '#4ade80'
+export const ZONE_NEAR_COLOR = '#fbbf24'
+export const ZONE_IN_RANGE_COLOR = '#fb923c'
+export const ZONE_MISS_COLOR = '#cbd0d6'
+// A voided end is a distinct, worse outcome than a miss (see docs/adr/0006) —
+// alarm red, not a fifth point on the zone gradient above.
+export const VOID_COLOR = '#ef4444'
 
 // The terrain is tens of meters long, so true-to-scale boules/cochonnet
 // render as sub-pixel dots on any realistic screen size. Draw them

@@ -13,6 +13,7 @@ function App() {
     currentEnd,
     totalScore,
     currentScore,
+    endScores,
     isComplete,
     isAnimating,
     animatedThrownBoulePosition,
@@ -31,7 +32,7 @@ function App() {
       </header>
 
       {isComplete || !currentEnd ? (
-        <GameOverScreen totalScore={totalScore} dateKey={dateKey} onPlayAgain={restart} />
+        <GameOverScreen totalScore={totalScore} endScores={endScores} dateKey={dateKey} onPlayAgain={restart} />
       ) : (
         <>
           <Scoreboard
@@ -39,8 +40,6 @@ function App() {
             boulesThrown={currentEnd.boulePositions.length}
             totalScore={totalScore}
             currentScore={currentScore}
-            lastThrow={lastThrow}
-            lastEndResult={lastEndResult}
           />
           <GameCanvas
             cochonnetPosition={currentEnd.cochonnetPosition}
@@ -49,6 +48,8 @@ function App() {
             animatedObstaclePositions={animatedObstaclePositions}
             animatedCochonnetPosition={animatedCochonnetPosition}
             isAnimating={isAnimating}
+            lastThrow={lastThrow}
+            lastEndResult={lastEndResult}
             onThrow={throwBoule}
           />
           <p className="app-hint">Pull back from the boule and release to throw.</p>

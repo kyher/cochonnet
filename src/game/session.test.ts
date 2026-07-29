@@ -8,6 +8,7 @@ import {
   createSession,
   getCurrentEnd,
   getCurrentScore,
+  getEndScores,
   getTotalScore,
   isSessionComplete,
   recordThrow,
@@ -173,6 +174,33 @@ describe('recordThrow with voided: true', () => {
     }
 
     expect(session.ends[0].voided).toBe(false)
+  })
+})
+
+describe('getEndScores', () => {
+  it('reads 0 for every unplayed end', () => {
+    const session = createSession(date)
+    expect(getEndScores(session)).toEqual([0, 0, 0])
+  })
+
+  it('fills in each end\'s score as it completes, leaving later ends at 0', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+
+    for (let i = 0; i < BOULES_PER_END; i++) {
+      session = recordThrow(session, cochonnet)
+    }
+
+    expect(getEndScores(session)).toEqual([50 * BOULES_PER_END, 0, 0])
+  })
+
+  it('reads 0 for a voided end', () => {
+    let session = createSession(date)
+    const cochonnet = session.ends[0].cochonnetPosition
+    session = recordThrow(session, cochonnet)
+    session = recordThrow(session, { x: 0, y: 13.5 }, { voided: true })
+
+    expect(getEndScores(session)).toEqual([0, 0, 0])
   })
 })
 

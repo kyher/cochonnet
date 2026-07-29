@@ -1,47 +1,65 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { drawShareCard, SHARE_CARD_HEIGHT_PX, SHARE_CARD_WIDTH_PX } from '../render/shareCard'
 
 interface GameOverScreenProps {
   totalScore: number
+  endScores: number[]
   dateKey: string
   onPlayAgain: () => void
 }
 
-type ShareStatus = 'idle' | 'copied' | 'error'
+type CopyStatus = 'idle' | 'copied' | 'error'
 
-function buildShareText(dateKey: string, totalScore: number): string {
-  return `Cochonnet — ${dateKey}\nScore: ${totalScore}\n${window.location.href}`
-}
+export function GameOverScreen({ totalScore, endScores, dateKey, onPlayAgain }: GameOverScreenProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
 
-export function GameOverScreen({ totalScore, dateKey, onPlayAgain }: GameOverScreenProps) {
-  const [shareStatus, setShareStatus] = useState<ShareStatus>('idle')
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
 
-  const handleShare = async () => {
-    const text = buildShareText(dateKey, totalScore)
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = SHARE_CARD_WIDTH_PX * dpr
+    canvas.height = SHARE_CARD_HEIGHT_PX * dpr
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ text })
-      } catch {
-        // User dismissed the share sheet — not an error.
-      }
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+    drawShareCard(ctx, { dateKey, totalScore, endScores, url: window.location.href })
+  }, [dateKey, totalScore, endScores])
+
+  const handleCopy = () => {
+    const canvas = canvasRef.current
+    if (!canvas || !navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
+      setCopyStatus('error')
       return
     }
 
-    try {
-      await navigator.clipboard.writeText(text)
-      setShareStatus('copied')
-      setTimeout(() => setShareStatus('idle'), 2000)
-    } catch {
-      setShareStatus('error')
-    }
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        setCopyStatus('error')
+        return
+      }
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+        setCopyStatus('copied')
+        setTimeout(() => setCopyStatus('idle'), 2000)
+      } catch {
+        setCopyStatus('error')
+      }
+    }, 'image/png')
   }
 
   return (
     <div className="game-over">
-      <h2>Session complete</h2>
-      <p className="game-over-score">{totalScore} points</p>
-      <button type="button" onClick={handleShare}>
-        {shareStatus === 'copied' ? 'Copied!' : shareStatus === 'error' ? 'Could not copy' : 'Share result'}
+      <canvas
+        ref={canvasRef}
+        className="share-card"
+        style={{ width: '100%', maxWidth: SHARE_CARD_WIDTH_PX }}
+      />
+      <button type="button" onClick={handleCopy}>
+        {copyStatus === 'copied' ? 'Copied!' : copyStatus === 'error' ? 'Could not copy' : 'Copy image'}
       </button>
       <button type="button" onClick={onPlayAgain}>
         Play again
