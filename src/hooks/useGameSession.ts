@@ -5,12 +5,13 @@ import {
   createSession,
   getCurrentEnd,
   getCurrentScore,
+  getEndScores,
   getTotalScore,
   isSessionComplete,
   recordThrow,
 } from '../game/session'
 import { distance, getScoringZone, getZonePoints, isWithinTerrain } from '../game/scoring'
-import type { EndState, SessionState } from '../game/types'
+import type { EndState, SessionState, Vector2 } from '../game/types'
 import { FIXED_TIMESTEP_S } from '../physics/constants'
 import { simulateThrow } from '../physics/simulate'
 import type { ThrowInput, Vector3 } from '../physics/types'
@@ -19,6 +20,8 @@ import { BOULES_PER_END, type ScoringZoneName } from '../game/constants'
 export interface LastThrowFeedback {
   zone: ScoringZoneName
   points: number
+  /** Ground-plane resting position of the thrown boule, for anchoring on-canvas feedback. */
+  position: Vector2
 }
 
 export interface LastEndResult {
@@ -31,6 +34,7 @@ export interface UseGameSessionResult {
   currentEnd: EndState | null
   totalScore: number
   currentScore: number
+  endScores: number[]
   isComplete: boolean
   isAnimating: boolean
   animatedThrownBoulePosition: Vector3 | null
@@ -136,7 +140,7 @@ export function useGameSession(date: Date): UseGameSessionResult {
         const zone: ScoringZoneName = isWithinTerrain(result.thrownBoulePosition)
           ? getScoringZone(distance(result.thrownBoulePosition, result.updatedCochonnetPosition))
           : 'miss'
-        setLastThrow({ zone, points: getZonePoints(zone) })
+        setLastThrow({ zone, points: getZonePoints(zone), position: result.thrownBoulePosition })
 
         // Computed up front, from data already in hand, rather than inside the
         // updateSession call below: a state transition should never itself
@@ -185,6 +189,7 @@ export function useGameSession(date: Date): UseGameSessionResult {
     currentEnd: getCurrentEnd(session),
     totalScore: getTotalScore(session),
     currentScore: getCurrentScore(session),
+    endScores: getEndScores(session),
     isComplete: isSessionComplete(session),
     isAnimating,
     animatedThrownBoulePosition,

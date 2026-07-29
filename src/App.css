@@ -24,26 +24,46 @@
   max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
 }
 
-.scoreboard-row {
+.scoreboard-primary {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  font-size: 15px;
-  font-variant-numeric: tabular-nums;
+  gap: 32px;
 }
 
-.scoreboard-feedback {
-  font-size: 14px;
+.score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.score-value {
+  font-size: 40px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-h);
+}
+
+.score-label {
+  font-size: 12px;
   font-weight: 600;
-  color: var(--accent);
-  min-height: 1.2em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.scoreboard-progress {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
 }
 
 .game-canvas-container {
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
@@ -51,6 +71,67 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.throw-feedback {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: throw-feedback-rise 1s ease-out forwards;
+}
+
+.throw-feedback-void {
+  font-size: 26px;
+  animation: throw-feedback-void 1.3s ease-out forwards;
+}
+
+@keyframes throw-feedback-rise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -130%) scale(1);
+  }
+}
+
+@keyframes throw-feedback-void {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  20% {
+    transform: translate(-56%, -50%) scale(1.1);
+  }
+  30% {
+    transform: translate(-44%, -50%) scale(1.1);
+  }
+  40% {
+    transform: translate(-56%, -50%) scale(1.1);
+  }
+  50% {
+    transform: translate(-44%, -50%) scale(1.1);
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(1);
+  }
 }
 
 .game-canvas {
@@ -61,16 +142,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-top: 40px;
+  gap: 16px;
+  margin-top: 16px;
   text-align: center;
 }
 
-.game-over-score {
-  font-size: 40px;
-  font-weight: 700;
-  color: var(--text-h);
-  margin: 0;
+.share-card {
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .game-over button {

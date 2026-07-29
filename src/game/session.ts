@@ -33,6 +33,11 @@ export function getTotalScore(session: SessionState): number {
   return session.ends.reduce((total, end) => total + (end.score ?? 0), 0)
 }
 
+/** Each end's final score so far, in play order. An in-progress or unplayed end reads as 0. */
+export function getEndScores(session: SessionState): number[] {
+  return session.ends.map((end) => end.score ?? 0)
+}
+
 /**
  * The running total for the in-progress end: the same `scoreEnd` computation
  * used for a finished end's score, applied to whatever boules and cochonnet
