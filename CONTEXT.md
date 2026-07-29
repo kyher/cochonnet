@@ -36,3 +36,7 @@ _Avoid_: Ring, target zone
 
 **Daily Seed**:
 A deterministic value derived from the calendar date, used to generate the sequence of cochonnet positions for that day. Every player who plays on the same date faces the identical sequence, making their session totals directly comparable.
+
+**Share Card**:
+The canvas-rendered recap of a completed Session — title, date, total score, and per-End breakdown — that doubles as both the screen shown when a Session ends and the image a player can save to share elsewhere. The two are the same artifact, not a display version and a separate export.
+_Avoid_: Share screen, results screen, game-over screen (the latter names the component, not the concept)
