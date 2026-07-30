@@ -1,32 +1,48 @@
-# React + TypeScript + Vite
+# Cochonnet
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A solo, daily score-attack game based on pétanque: throw boules at a cochonnet (jack) whose
+position each end is generated from a deterministic daily seed, so every player who plays on the
+same date faces the identical layout and can compare scores directly.
 
-Currently, two official plugins are available:
+A session is 3 ends, 3 boules per end. Zone-based scoring, mass-aware physics for
+boule-to-cochonnet collisions (a struck cochonnet can fly off and get knocked out of bounds,
+voiding the end), and a canvas-rendered Share Card recap at the end of a session.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+See [`CONTEXT.md`](./CONTEXT.md) for the game's domain vocabulary (boule, end, terrain, scoring
+zone, etc.) and [`docs/adr`](./docs/adr) for the design decisions behind the physics, scoring, and
+UI.
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + TypeScript, built with Vite
+- Custom 2D physics simulation (no physics library — see [ADR-0001](./docs/adr/0001-custom-physics-engine.md))
+- Canvas rendering for the game board and Share Card
+- Vitest + Testing Library for tests, Oxlint for linting
 
-## Expanding the Oxlint configuration
+## Getting started
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+Requires [pnpm](https://pnpm.io/) and Node 24 (matches CI).
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+pnpm install
+pnpm dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+This starts the Vite dev server (with HMR) and prints a local URL to open in your browser.
+
+## Testing & linting
+
+```bash
+pnpm test        # run the test suite once
+pnpm test:watch  # run tests in watch mode
+pnpm lint        # run oxlint
+```
+
+CI (`.github/workflows`) runs `pnpm lint` and `pnpm test` on every push/PR against `main`.
+
+## Building
+
+```bash
+pnpm build    # type-checks (tsc -b) then builds to dist/
+pnpm preview  # serve the production build locally
+```
